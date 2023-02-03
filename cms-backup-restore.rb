@@ -6,25 +6,25 @@ require 'json'
 class SqlPal
 
 	def initialize
-		@sql = {}
-		@sql[:TIME] = Time.now.to_i
 		@cmd = %q||
 		@choice = %q||
-		@menu_json = []
 		@json = {}
 	end
 	
 	def go 
 		# json menu
 		n = 0
+		menu_json = Dir.glob(%q|*.json|)
 		
-		@menu_json = Dir.glob(%q|*.json|)
-		system %q|perl ./json-generator.pl| unless @menu_json.length > 0
+		unless menu_json.length > 0 then
+			system %q|perl ./json-generator.pl|
+			menu_json = Dir.glob(%q|*.json|)
+		end
 		
 		loop do 
 			# printf %Q|\033[2J|
 			printf %Q|%s %s %s\n|, %q|~|*13, %q|DB TOOLS|, %q|~|*13
-			@menu_json.each_with_index do |v,k|
+			menu_json.each_with_index do |v,k|
 				printf %Q|%-2d ~ %s\n|, k, v.blue 
 			end
 			printf %Q|%s\n|, %q|~|*36
@@ -32,20 +32,20 @@ class SqlPal
 			@choice = gets.chomp!
 			
 			next if @choice.match(%r~[[:alpha:]]~i)
-			next unless @menu_json[@choice.to_i]
+			next unless menu_json[@choice.to_i]
 			
 			break
 		end
 		
-		json_raw = File.read(@menu_json[@choice.to_i])
+		json_raw = File.read(menu_json[@choice.to_i])
 		
 		loop do 
 			# printf %Q|\033[2J|
 			printf %Q|%s %s %s\n|, %q|~|*13, %q|LOAD INFO|, %q|~|*12
 			
-			json = JSON.parse(json_raw)
+			json_which = JSON.parse(json_raw)
 			
-			json.each do |k,v|
+			json_which.each do |k,v|
 				if k.match(%r~^\d+$~) then
 					printf %Q|%d ~ %s\n|, k.to_i, v.to_s.blue
 				end
@@ -53,11 +53,11 @@ class SqlPal
 			printf %Q|%s\n|, %q|~|*36
 			printf %Q|%s: |, %q|choice|.yellow
 			@choice = gets.chomp!
-			next unless json[@choice]
+			next unless json_which[@choice]
 			
-			@json = json[@choice]
-			@json['linuxuser'] = json['linuxuser']
-			@json['sqlpass']   = json['sqlpass']
+			@json = json_which[@choice]
+			@json['linuxuser'] = json_which['linuxuser']
+			@json['sqlpass']   = json_which['sqlpass']
 			
 			break
 		end
