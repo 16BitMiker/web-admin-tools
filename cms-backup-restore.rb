@@ -77,7 +77,7 @@ class SqlPal
 					&& 
 					cp -vr DIR TIME_DATABASE/ 
 					&& 
-					sudo mysqldump --user='USER' --password='PASS' DATABASE > TIME_DATABASE/TIME_DATABASE.sql 
+					sudo mysqldump --user='root' --password='PASS' DATABASE > TIME_DATABASE/TIME_DATABASE.sql 
 					&& 
 					tar -cvzf TIME_DATABASE.tar.gz TIME_DATABASE 
 					&& 
@@ -89,7 +89,7 @@ class SqlPal
 				
 			elsif choice.match(%r~^s(?:ql)?$~i)  
 			
-				@cmd = %q|sudo mysqldump --user='USER' --password='PASS' DATABASE > TIME_DATABASE.sql|
+				@cmd = %q|sudo mysqldump --user='root' --password='PASS' DATABASE > TIME_DATABASE.sql|
 				
 			elsif choice.match(%r~^r(?:estore)?$~i) 
 			
@@ -117,7 +117,7 @@ class SqlPal
 					break
 				end
 			
-				@cmd = %q|sudo mysql -u'USER' –p'PASS' 'DATABASE' < 'DBFILE'|
+				@cmd = %q|sudo mysql -u'root' –p'PASS' 'DATABASE' < 'DBFILE'|
 				@cmd.sub!(%r~DBFILE~,menu_sql[@choice.to_i])
 				
 			elsif choice.match(%r~^u(?:ntar)?$~i)
@@ -178,7 +178,7 @@ class SqlPal
 					
 				elsif m.match(%r~^PASS$~) then 
 				
-					@json['dbpass']
+					@json['sqlpass']
 					
 				end
 				
