@@ -1,4 +1,4 @@
-# Ubuntu Server Installer
+# Web Admin Tools
 
 ### *(Tested on Ubuntu 22.04 LTS)*
 
