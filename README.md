@@ -6,6 +6,10 @@
 
 - Load dependancies for installer script.
 
+## json-generator.pl
+
+- Run this before running the tools below. This generates the info needed for the other tools to run.
+
 ## cms-backup-restore.rb
 
 Ruby wrapper for the following shell commands:
