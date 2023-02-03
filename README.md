@@ -10,7 +10,7 @@
 
 Ruby wrapper for the following shell commands:
 
-### *Backup*
+#### *Backup*
 
 ```
 mkdir -vp TIME_DATABASE 
@@ -24,19 +24,19 @@ tar -cvzf TIME_DATABASE.tar.gz TIME_DATABASE
 rm -vr TIME_DATABASE
 ```
 
-### *SQL Export*
+#### *SQL Export*
 
 ```
 sudo mysqldump --user='USER' --password='PASS' DATABASE > TIME_DATABASE.sql
 ```
 
-### *UnTar to Directory*
+#### *UnTar to Directory*
 
 ```
 tar -xvzf TARBALL -C DIR
 ```
 
-### *Import SQL Database*
+#### *Import SQL Database*
 
 ```
 mysql -u'USER' –p'PASS' 'DATABASE' < 'DBFILE
@@ -46,11 +46,11 @@ mysql -u'USER' –p'PASS' 'DATABASE' < 'DBFILE
 
 This helper script will setup a web server with a AMP stack. It has the following options: *(run with sudo)*
 
-### updaters
+#### *updaters*
 
 - **update_upgrade** -- apt update && apt upgrade -y
 
-### installers
+#### *installers*
 
 - **install_essentials** -- install essential packages
 - **install_fun** -- install optional packages
@@ -58,13 +58,13 @@ This helper script will setup a web server with a AMP stack. It has the followin
 - **install_php** -- install php, tweak php.ini
 - **install_mysql** -- install mysql
 
-### setups 
+#### *setups* 
 
 - **setup_sudo** -- no more sudo password required
 - **setup_ufw** -- setup software firewall
 - **setup_mysql_db** -- setup mysql database 
 
-### load configs
+#### *load configs*
 
 - **config_apache_webconf** -- virtualhost setup for web server
 - **config_bashrc** -- setup your .bashrc
