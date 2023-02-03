@@ -4,5 +4,5 @@ perl -M'Term::ANSIColor'=':constants' -E 'printf qq|> %s%s |, GREEN q|press ente
 
 perl -M'Term::ANSIColor'=':constants' -sE 'map { printf qq|> %s%s\n|, YELLOW $_, RESET; system $_; } split m~`~, $cmds' -- -cmds='sudo apt update -y`sudo apt install perl -y`sudo apt install cpanminus -y`sudo cpanm Expect`sudo cpanm JSON::MaybeXS`cpanm Data::Dump' 
 
-perl -M'Term::ANSIColor'=':constants' -e 'printf qq|> %s%s\n|, GREEN q|tip: run script with sudo for best effect...|, RESET;' 
+perl -M'Term::ANSIColor'=':constants' -e 'printf qq|> %s%s\n|, GREEN q|setup complete!|, RESET;' 
 
