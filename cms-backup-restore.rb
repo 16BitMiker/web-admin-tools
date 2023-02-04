@@ -117,7 +117,7 @@ class SqlPal
 					break
 				end
 			
-				@cmd = %q|sudo mysql -u'root' -p'PASS' 'DATABASE' < 'DBFILE'|
+				@cmd = %q|sudo mysql -f -u'root' -p'PASS' 'DATABASE' < 'DBFILE'|
 				@cmd.sub!(%r~DBFILE~,menu_sql[@choice.to_i])
 				
 			elsif choice.match(%r~^u(?:ntar)?$~i)
