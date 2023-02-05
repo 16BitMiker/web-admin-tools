@@ -193,7 +193,7 @@ package Ubuntu::Installer
 			unless (m~^\Z~)
 			{
 				printf qq|> %s%s\n|, YELLOW $_, RESET;
-				# eval { system $_ };
+				eval { system $_ };
 				
 				if ($? > 0)
 				{
