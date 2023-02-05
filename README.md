@@ -61,6 +61,8 @@ This helper script will setup a web server with a AMP stack. It has the followin
 - **install_apache** -- install apache
 - **install_php** -- install php, tweak php.ini
 - **install_mysql** -- install mysql
+- **wpcli_install** -- install wp-cli
+- **wordpress_install** -- install latest wordpress version
 
 #### *setups* 
 
