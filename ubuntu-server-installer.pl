@@ -61,7 +61,7 @@ package Ubuntu::Installer
 		printf qq|\033[2J|;
 		
 		my $self = shift;
-		my @choices = qw~setup_sudo update_upgrade install_essentials install_fun setup_ufw install_apache install_php install_mysql setup_mysql_db config_apache_webconf config_bashrc~;
+		my @choices = qw~setup_sudo update_upgrade install_essentials install_fun setup_ufw install_apache install_php install_mysql setup_mysql_db wpcli_install wordpress_install config_apache_webconf config_bashrc~;
 		
 		my $n;
 		
@@ -193,7 +193,7 @@ package Ubuntu::Installer
 			unless (m~^\Z~)
 			{
 				printf qq|> %s%s\n|, YELLOW $_, RESET;
-				eval { system $_ };
+				# eval { system $_ };
 				
 				if ($? > 0)
 				{
@@ -413,17 +413,7 @@ package Ubuntu::Installer
 			sudo mysql -uroot -pPASS -e "FLUSH PRIVILEGES;"
 		CMDS
 	
-		$cmd =~ s`(?x)
-		
-			PASS(?{ $m = $pass })
-			|
-			DBNAME(?{ $m = $dbname })
-			|
-			DBUSER(?{ $m = $dbuser })
-			|
-			DBPASS(?{ $m = $dbpass })
-		
-		`$m`ge;
+		$cmd =~ s`(?x)PASS(?{ $m = $pass })|DBNAME(?{ $m = $dbname })|DBUSER(?{ $m = $dbuser })|DBPASS(?{ $m = $dbpass })`$m`ge;
 
 		$self->_process_cmd($cmd);
 	}
@@ -491,17 +481,8 @@ package Ubuntu::Installer
 		
 		CONFIG
 		
-		$config =~ s`(?x)
-		
-			WEBFOLDER(?{ $m = $webfolder })
-			|
-			WEBSITE(?{ $m = $website })
-			|
-			EMAIL(?{ $m = $email })
-			|
-			TAB(?{ $m = qq|\t| })
-		
-		`$m`ge;
+		$config =~ s`(?x)WEBFOLDER(?{ $m = $webfolder })|WEBSITE(?{ $m = $website })|EMAIL(?{ $m = $email })|TAB(?{ $m = qq|\t| })`$m`ge;
+
 
 		# say $config; exit; # debug
 		
@@ -516,7 +497,7 @@ package Ubuntu::Installer
 
 		my $linuxuser = $$self{json}{linuxuser};
 
-		(my $config = <<~'CONFIG') =~ s`^(?:\t+|\s+)``rgm;
+		(my $config = <<~'CONFIG') =~ s`^\t+|^\s+|^\ ``mrg;
 			
 			######## customized .bashrc config
 			
@@ -567,6 +548,48 @@ package Ubuntu::Installer
 		
 		$self->_write_config($dir, q|.bashrc|, $config);
 		$self->_process_cmd(qq|source ${dir}/.bashrc|);
+	}
+	
+	sub _wpcli_install()
+	{
+		my $self = shift;
+		
+		(my $cmds = <<~'CMDS') =~ s`^(?:\s+|\t+|\ +)``mgr;
+			curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+			php wp-cli.phar --info
+			chmod +x wp-cli.phar
+			sudo mv wp-cli.phar /usr/local/bin/wp
+			wp --info
+		CMDS
+		
+		$self->_process_cmd($cmds);
+	}
+	
+	sub _wordpress_install() 
+	{ 
+		my $self = shift;
+		
+		my $dir    = q|/var/www/|;
+		my $title  = q|Change Me|;
+		my $db     = $$self{json}{dbname};
+		my $user   = $$self{json}{dbuser};  # not the best
+		my $pass   = $$self{json}{dbpass};  # not the best
+		my $email  = $$self{json}{email};   # not the best
+		my $url    = $$self{json}{website};
+		my $folder = $$self{json}{webfolder};
+		
+		(my $cmds = <<~"END_TOKEN") =~ s`^(?:\s+|\t+)``mgr; 
+		sudo mkdir -p DIR && cd DIR && sudo chown -R \$(whoami):www-data . && curl -sSL -O http://wordpress.org/latest.zip && unzip latest.zip && mv wordpress WEBFOLDER && sudo chown -R \$(whoami):www-data . && sudo chmod -R 775 . && rm latest.zip
+		cd DIRWEBFOLDER && wp config create --dbname=DB --dbuser=USER --dbpass=PASS
+		cd DIRWEBFOLDER && wp db create
+		cd DIRWEBFOLDER && wp core install --url='http://DOMAIN' --title='TITLE' --admin_user=USER --admin_password='PASS' --admin_email='EMAIL'
+		echo "define('FS_METHOD', 'direct');" | sudo tee -a DIRWEBFOLDER/wp-config.php
+		cd DIRWEBFOLDER wp cache flush
+	END_TOKEN
+		
+		$cmds =~ s`DIR(?{$m=$dir})|WEBFOLDER(?{$m=$folder})|DB(?{$m=$db})|USER(?{$m=$user})|PASS(?{$m=$pass})|DOMAIN(?{$m=$url})|TITLE(?{$m=$title})|EMAIL(?{$m=$email})`$m`ge;
+		
+		$self->_process_cmd($cmds);
 	}
 	
 }
